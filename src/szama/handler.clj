@@ -5,10 +5,13 @@
         [szama.db]
         [ring.middleware.params]
         [ring.util.response]
+        [ring.middleware.logger :as logger]
         [clojure.string :only [blank?]])
   (:require [szama.views :as views]
             [compojure.handler :as handler]
             [compojure.route :as route]))
+
+
 
 (defn layout [tpl] (views/layout tpl))
 
@@ -29,8 +32,9 @@
                     (select orders
                        (with entries)
                        (order :created_at :DESC)
-                       (limit 5)))]
-    (layout (views/home orders))))
+                       (limit 5)))
+        users (select users)]
+    (layout (views/home orders users))))
 
 (defn users-index [req]
   (layout (views/users-index (select users))))
@@ -51,7 +55,7 @@
 
 (defn string-to-amount [s] (int (* 100 (string-to-number s))))
 
-(defn save-entries [order mod items]
+(defn prepare-entries [order mod items]
   (map
     (fn [e] (assoc e :amount (* (e :amount) mod)))
     (filter
@@ -68,13 +72,22 @@
           eaters (params :eaters)
           payers (params :payers)
           delivery (string-to-amount (params :delivery))
-          order (insert orders (values {:delivery delivery}))]
-      (insert entries
-        (values
-          (concat
-            (save-entries order -1 eaters)
-            (save-entries order 1  payers)))))
-  (redirect "/")))
+          order (insert orders (values {:delivery delivery}))
+          eaters-data (prepare-entries order -1 eaters)
+          payers-data (prepare-entries order  1 payers)
+          data (seq (concat eaters-data payers-data))]
+      ; create entries records
+      (insert entries (values data))
+
+      ; update users balance
+      (doall
+        (map (fn [e]
+          (exec-raw ["UPDATE users SET balance = balance + ? WHERE id = ?" [(e :amount) (e :user_id)]]))
+        data)))
+
+   (redirect "/")
+   ))
+
 
 (defroutes app-routes
   (context "/users" [] (defroutes users-routes

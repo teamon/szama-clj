@@ -58,7 +58,7 @@
     [:div
       (submit-button "Create order")]))
 
-(defn home [orders]
+(defn home [orders users]
   [:div
     [:h2 "Recent orders"]
     [:table
@@ -74,10 +74,23 @@
 ;          [:td (o :caller)]
          ])
         orders)]
+    [:h2 "Users"]
+    [:a {:href "/users"} "Manage"]
+    [:table
+      [:tr
+       [:th "Name"]
+       [:th "Balance"]]
+      (map (fn [u]
+       [:tr
+         [:td (u :name)]
+         [:td (number-to-currency (u :balance))]])
+       users)]
+
     (order-form)])
 
 (defn users-index [users]
   [:div
+    [:a {:href "/"} "Back"]
     [:div
       [:table
         [:tr

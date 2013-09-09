@@ -13,6 +13,7 @@
       :users
       [:id          "SERIAL" "PRIMARY KEY"]
       [:name        "VARCHAR(255)"]
+      [:balance     "INTEGER" "DEFAULT 0"]
       [:created_at  "TIMESTAMP" "NOT NULL" "DEFAULT CURRENT_TIMESTAMP"])))
 
 
