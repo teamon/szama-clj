@@ -5,7 +5,8 @@
                   [compojure "1.1.5"]
                   [korma "0.3.0-RC5"]
                   [postgresql "9.1-901.jdbc4"]
-                  [hiccup "1.0.4"]]
+                  [hiccup "1.0.4"]
+                  [clj-bonecp-url "0.1.0"]]
   :plugins [[lein-ring "0.8.5"]
             [drift "1.5.2"]]
   :ring {:handler szama.handler/app}

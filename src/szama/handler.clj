@@ -5,7 +5,6 @@
         [szama.db]
         [ring.middleware.params]
         [ring.util.response]
-        [ring.middleware.logger :as logger]
         [clojure.string :only [blank?]])
   (:require [szama.views :as views]
             [compojure.handler :as handler]

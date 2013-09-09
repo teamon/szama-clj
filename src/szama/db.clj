@@ -1,22 +1,23 @@
 (ns szama.db
   (:use
     [korma.db]
-    [korma.core])
+    [korma.core]
+    [clj-bonecp-url.core])
   (:require [clojure.java.jdbc :as sql]))
 
-(def dbspec {:classname   "org.postgresql.Driver"
-             :subprotocol "postgresql"
-             :subname "//localhost:5432/szama"
-             :user     "teamon"
-             :password ""})
 
-; korma db
-(defdb db dbspec)
+(def datasource
+  (datasource-from-url
+    (or (System/getenv "DATABASE_URL")
+        "postgres://teamon@localhost:5432/szama")))
+
+(when (nil? @korma.db/_default)
+  (korma.db/default-connection {:pool {:datasource datasource}}))
+
 
 ; for migrations
 (defn invoke-with-connection [f]
-  (sql/with-connection
-    dbspec
+  (sql/with-connection {:datasource datasource}
     (sql/transaction (f))))
 
 
