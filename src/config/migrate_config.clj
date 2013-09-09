@@ -31,8 +31,7 @@
    :ns-content "\n  (:use
    [korma.db]
    [korma.core]
-   [szama.db]
-   )\n  (:require [clojure.java.jdbc :as sql]))"
+   [szama.db])\n  (:require [clojure.java.jdbc :as sql])"
    :namespace-prefix "migrations"
    ; :init maybe-create-schema-table
    :current-version current-db-version

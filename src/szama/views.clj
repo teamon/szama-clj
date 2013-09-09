@@ -2,8 +2,16 @@
   (:use [hiccup.core]
         [hiccup.page]
         [hiccup.form]
-        [hiccup.element]))
+        [hiccup.element]
+        [korma.core]
+        [szama.db]))
 
+; helpers
+(defn delete-form [url]
+  (form-to [:delete url]
+    (submit-button "Delete")))
+
+; templates
 (defn layout [content]
   (html
     (html5
@@ -13,9 +21,37 @@
         [:body content]]
       )))
 
-(defn delete-form [url]
-  (form-to [:delete url]
-    (submit-button "Delete")))
+(defn user-select [name]
+  [:select {:name name}
+    [:option {:value ""} ""]
+    (map (fn [u] [:option {:value (u :id)} (u :name)]) (select users))])
+
+(defn order-form-table [n key header]
+  [:div
+    [:h3 header]
+    [:table
+      [:tr
+        [:th "User"]
+        [:th "Amount"]]
+      (map (fn [i]
+        [:tr
+          [:td (user-select (str key "[" i "][user_id]"))]
+          [:td (text-field (str key "[" i "][amount]"))]])
+        (take n (range)))]])
+
+(defn order-form []
+  (form-to [:post "/orders"]
+    (order-form-table 10 "eaters" "Eaters")
+    [:div
+      (label "delivery" "Delivery")
+      (text-field "delivery")]
+    (order-form-table 3 "payers" "Payers")
+    [:div
+      (submit-button "Create order")]))
+
+(defn home []
+  [:div
+    (order-form)])
 
 (defn users-index [users]
   [:div
@@ -35,6 +71,4 @@
           (label "name" "Name")
           (text-field "name")]
         [:div
-          (submit-button "Create new user")])]])
-
-(defn entry-form)
+          (submit-button "Create user")])]])

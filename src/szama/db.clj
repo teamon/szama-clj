@@ -21,4 +21,14 @@
     )
   )
 
-(defentity users)
+(defentity entries)
+  ; (belongs-to order)
+  ; (belongs-to user))
+
+(defentity users
+  (has-many entries))
+
+(defentity orders
+  (has-many entries))
+
+
