@@ -11,6 +11,15 @@
   (form-to [:delete url]
     (submit-button "Delete")))
 
+(defn number-to-currency [amount]
+  (format "%.2f" (/ amount 100.0)))
+
+(defn format-date [date]
+  (let [fm (new java.text.SimpleDateFormat "yyyy-mm-dd hh:mm:ss")]
+    (.format fm date)))
+
+(format-date (new java.util.Date))
+
 ; templates
 (defn layout [content]
   (html
@@ -49,8 +58,22 @@
     [:div
       (submit-button "Create order")]))
 
-(defn home []
+(defn home [orders]
   [:div
+    [:h2 "Recent orders"]
+    [:table
+      [:tr
+        [:th "Date"]
+        [:th "Amount"]
+ ;       [:th "Caller"]
+       ]
+      (map (fn [o]
+        [:tr
+          [:td (format-date (o :created_at))]
+          [:td (number-to-currency (o :total))]
+;          [:td (o :caller)]
+         ])
+        orders)]
     (order-form)])
 
 (defn users-index [users]

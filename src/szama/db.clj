@@ -16,19 +16,18 @@
 ; for migrations
 (defn invoke-with-connection [f]
   (sql/with-connection
-     dbspec
-     (sql/transaction (f))
-    )
-  )
+    dbspec
+    (sql/transaction (f))))
 
-(defentity entries)
-  ; (belongs-to order)
-  ; (belongs-to user))
+
+(declare entries users orders)
+
+(defentity entries
+  (belongs-to orders)
+  (belongs-to users))
 
 (defentity users
   (has-many entries))
 
 (defentity orders
-  (has-many entries))
-
-
+  (has-many entries {:fk :order_id}))

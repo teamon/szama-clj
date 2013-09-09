@@ -12,7 +12,25 @@
 
 (defn layout [tpl] (views/layout tpl))
 
-(defn home [req] (layout (views/home)))
+
+(defn total-amount [order]
+  (let [entries (order :entries)]
+    (+ (order :delivery) (- (reduce +
+            (filter #(< % 0)
+                    (map #(% :amount) entries)))))))
+
+(defn make-order [order]
+  { :id (order :id)
+    :created_at (order :created_at)
+    :total (total-amount order)})
+
+(defn home [req]
+  (let [orders (map make-order
+                    (select orders
+                       (with entries)
+                       (order :created_at :DESC)
+                       (limit 5)))]
+    (layout (views/home orders))))
 
 (defn users-index [req]
   (layout (views/users-index (select users))))
