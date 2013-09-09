@@ -8,7 +8,8 @@
         [clojure.string :only [blank?]])
   (:require [szama.views :as views]
             [compojure.handler :as handler]
-            [compojure.route :as route]))
+            [compojure.route :as route]
+            [ring.adapter.jetty :as jetty]))
 
 
 
@@ -107,3 +108,11 @@
   (-> (handler/site app-routes)
     (wrap-params)
     ))
+
+(defn start [port]
+  (jetty/run-jetty #'app {:port port :join? false}))
+
+(defn -main []
+  (let [port (Integer/parseInt
+               (or (System/getenv "PORT") "8080"))]
+  (start port)))
